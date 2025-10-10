@@ -1,0 +1,17 @@
+{{ partial "messages/needs-editing.html" .}}
+{{ partial "content/github-buttons.html" .}}
+<article>
+  {{ if not (in .Permalink "overview") }}
+  <h1 class="ui xo margin top without">
+    <div class="ui medium">{{ .Title }}
+      {{ with .Params.subtitle }}
+      <div class="sub">{{ . }}</div>
+      {{ end }}
+    </div>
+  </h1>
+  {{ end }}
+
+  {{ .Content }}
+</article>
+
+{{ partial "content/mentions.html" . }}

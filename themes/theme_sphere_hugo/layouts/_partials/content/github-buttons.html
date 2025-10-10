@@ -1,0 +1,61 @@
+<div class="xo padding top bottom">
+  <div class="ui mini horizontal divided link list">
+    <!-- Display last edited date of the page -->
+    <div class=" disabled item">
+      Last edit: {{ $p := . }}{{ with $p.Lastmod }}{{ .Format "2006-01-02" }}{{ else }}{{ $p.Date.Format "2006-01-02" }}{{ end }}
+    </div>
+
+    <!-- Link to the page in the Github Repository -->
+    {{ $p := . }}{{ $scratch := newScratch }}
+    <a class="item noelink noul" href="https://github.com/{{ $p.Site.Params.repository }}/blob/master/{{ $p.File.Path }}" target="_blank">
+      <span data-tooltip="Edit page in GitHub" data-variation="mini" data-inverted="">
+        <i class="fal fa-edit" data-fa-transform="grow-6 right-6"></i>
+      </span>
+    </a>
+
+    <!-- How it works: check in `_data/entry_issues.yml` for an instance where page_title equals the current page title -->
+    {{ range $i, $issue := $p.Site.Data.entry_issues }}
+      {{ if eq $p.Title $issue.page_title }}
+        {{ if $issue.edit_issue }}
+          {{ $scratch.Set "edit_issue" true }}
+          <a class="item noelink noul" href="https://github.com/{{ $p.Site.Params.repository }}/issues/{{ $issue.edit_issue }}#new_comment_field" target="_blank">
+            <span data-tooltip="Add to GitHub Issue" data-variation="mini" data-inverted="">
+              <i class="fal fa-bug" data-fa-transform="grow-6 right-6"></i>
+            </span>
+          </a>
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    {{ if not ($scratch.Get "edit_issue") }}
+    <a class="item noelink noul" href="https://github.com/{{ $p.Site.Params.repository }}/issues/new" target="_blank">
+      <span data-tooltip="Open GitHub Issue" data-variation="mini" data-inverted="">
+        <i class="fal fa-bug" data-fa-transform="grow-6 right-6"></i>
+      </span>
+    </a>
+    {{ end }}
+    {{ if ne $p.Layout "page" }}
+    {{ range $i, $issue := $p.Site.Data.entry_issues }}
+      {{ if eq $issue.page_title $p.Title }}
+        {{ if $issue.comments_issue }}
+          {{ $scratch.Set "comments_issue" true }}
+          {{ $scratch.Set "comments_issue_id" $issue.comments_issue }}
+          <a class="item noelink noul" href="https://github.com/{{ $p.Site.Params.comments_repo }}/issues/{{ $issue.comments_issue }}#new_comment_field" target="_blank">
+            <span data-tooltip="Add Comment in GitHub" data-variation="mini" data-inverted="">
+              <i class="fal fa-comment" data-fa-transform="grow-6 right-6"></i>
+            </span>
+          </a>
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    {{ if not ($scratch.Get "comments_issue") }}
+    <a class="item noelink noul" href="https://github.com/{{ $p.Site.Params.comments_repo }}/issues/new" target="_blank">
+      <span data-tooltip="Open Comments Issue in GitHub" data-variation="mini" data-inverted="">
+        <i class="fal fa-comments" data-fa-transform="grow-6 right-6"></i>
+      </span>
+    </a>
+    {{ end }}
+    {{ end }}
+  </div>
+</div>

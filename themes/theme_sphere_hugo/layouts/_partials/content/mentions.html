@@ -1,0 +1,56 @@
+{{ $p := . }}
+{{ $scratch := newScratch }}
+
+{{/* Detect hosts and partners by scanning all regular pages' params */}}
+{{ range $i, $entry := .Site.RegularPages }}
+  {{ with $entry.Params.hosts }}
+    {{ range $h := . }}
+      {{ if eq $h $p.Title }}
+        {{ $scratch.Set "hostsSphere" true }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ with $entry.Params.partners }}
+    {{ range $pt := . }}
+      {{ if eq $pt $p.Title }}
+        {{ $scratch.Set "partnersSphere" true }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ if or ($scratch.Get "hostsSphere") ($scratch.Get "partnersSphere") }}
+<h3 class="ui horizontal divider header">
+  <i class="far fa-at"></i> Mentions
+</h3>
+{{ end }}
+
+{{ if $scratch.Get "hostsSphere" }}
+<h5 class="ui header">Hosting</h5>
+  <div class="ui list">
+    {{ range $i, $entry := .Site.RegularPages }}
+      {{ with $entry.Params.hosts }}
+        {{ range $h := . }}
+          {{ if eq $h $p.Title }}
+            <div class="item"><a href="{{ $entry.RelPermalink }}">{{ $entry.Title }} {{ (replaceRE "s$" "" $entry.Section) | title }}</a></div>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  </div>
+{{ end }}
+
+{{ if $scratch.Get "partnersSphere" }}
+<h5 class="ui header">Partnerships</h5>
+  <div class="ui list">
+    {{ range $i, $entry := .Site.RegularPages }}
+      {{ with $entry.Params.partners }}
+        {{ range $pt := . }}
+          {{ if eq $pt $p.Title }}
+            <div class="item"><a href="{{ $entry.RelPermalink }}">{{ $entry.Title }} {{ (replaceRE "s$" "" $entry.Section) | title }}</a></div>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  </div>
+{{ end }}

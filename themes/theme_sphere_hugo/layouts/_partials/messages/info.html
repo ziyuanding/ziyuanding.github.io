@@ -1,0 +1,14 @@
+{{ $ctx := . }}
+{{ $scr := newScratch }}
+{{ with $ctx.title }}{{ $scr.Set "title" . }}{{ else }}{{ with $ctx.Title }}{{ $scr.Set "title" . }}{{ else }}{{ $scr.Set "title" "" }}{{ end }}{{ end }}
+{{ with $ctx.text }}{{ $scr.Set "text" . }}{{ else }}{{ $scr.Set "text" "" }}{{ end }}
+
+<div class="ui mini icon teal message docs">
+  <div class="content">
+    <div class="header">
+      <i class="fas fa-info-square icon"></i>
+      {{ $scr.Get "title" }}
+    </div>
+    <p>{{ $scr.Get "text" | markdownify }}</p>
+  </div>
+</div>

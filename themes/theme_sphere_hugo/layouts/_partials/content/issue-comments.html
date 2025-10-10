@@ -1,0 +1,67 @@
+
+<!-- Use GitHub 4 Comments -->
+<div class="ui grid container xo top padding">
+<section class="xo margin top fourfold">
+  <h3 class="ui horizontal divider header">
+    <i class="far fa-comments"></i> Comments
+  </h3>
+  {{ $p := . }}
+  {{ $scratch := newScratch }}
+  {{ $commentsRepo := default $p.Site.Params.repository $p.Site.Params.comments_repo }}
+
+  {{/* expose the computed comments issue id as a simple var to avoid nested-quote parsing in JS */}}
+  {{ $commentsID := $scratch.Get "comments_issue_id" }}
+
+  {{ range $i, $issue := $p.Site.Data.entry_issues }}
+    {{ if eq $issue.page_title $p.Title }}
+      {{ if $issue.comments_issue }}
+        {{ $scratch.Set "comments_issue" true }}
+        {{ $scratch.Set "comments_issue_id" $issue.comments_issue }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ if $scratch.Get "comments_issue" }}
+  <div class='ui small minimal comments'>
+    <div id="comments"></div>
+  </div>
+
+    <a target="_blank" href="https://github.com/{{ $commentsRepo }}/issues/{{ $scratch.Get "comments_issue_id" }}">
+      <div class="ui basic submit mini button">
+          <i class="fal fa-comment"></i> Add Comment in GitHub
+      </div>
+    </a>
+
+  {{ else }}
+  <a target="_blank" href="https://github.com/{{ $commentsRepo }}/issues/new">
+    <div class="ui basic submit mini button">
+        <i class="fal fa-comment"></i> Open Comments Issue in GitHub
+    </div>
+  </a>
+  {{ end }}
+</section>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+<script type="text/javascript">
+function loadComments(data) {
+  for (var i=0; i<data.length; i++) {
+    var cuser = data[i].user.login;
+    var cuserlink = "https://www.github.com/" + data[i].user.login;
+    var ctype = data[i].user.type;
+  var clink = "https://github.com/{{ $commentsRepo }}/issues/{{ $commentsID }}#issuecomment-" + data[i].url.substring(data[i].url.lastIndexOf("/")+1);
+    var cbody = data[i].body_html;
+    var cavatarlink = data[i].user.avatar_url;
+    var cdate = Date.parse(data[i].created_at).toString("yyyy-MM-dd HH:mm");
+
+    $("#comments").append("<div class='comment'><a class='avatar'>" + '<img src="' + cavatarlink + '">' + "</a><div class='content'><a class='author' target='_blank' href=\""+ cuserlink + "\">" + cuser + "</a><div class='metadata'><div class='date'>" + cdate + "</div></div><div class='text'>" + cbody + "</div></div><div class='actions'><a target='_blank' href=\"" + clink + "\" class='reply'><i class='far fa-reply'></i> Reply</a><a target='_blank' href=\"" + clink + "\" class='reply'><i class='far fa-smile'></i> React</a></div></div></div>");
+  }
+}
+
+// $.ajax("https://api.github.com/repos/{{ $commentsRepo }}/issues/{{ $commentsID }}/comments?per_page=100", {
+//   headers: {Accept: "application/vnd.github.full+json"},
+//   dataType: "json",
+//   success: function(msg){
+//     loadComments(msg);
+//  }
+// });
+</script>

@@ -1,0 +1,26 @@
+{{ define "main" }}
+
+<div class="ui grid container xo top padding">
+  <section class="hero">
+    <h1>{{ .Site.Title }}</h1>
+    <p>{{ with .Site.Params.description }}{{ . }}{{ end }}</p>
+  </section>
+
+  <section class="recent">
+    <!-- <h2>全部文章</h2> -->
+
+    {{ range .Site.RegularPages.GroupByDate "2006" }}
+    <p>{{ .Key }}</p>
+    <ul>
+      {{ range .Pages }}
+      <li>{{ .Date.Format "2006-01-02" }} <a href="{{ .RelPermalink }}" style="color: #144b05;">{{ .LinkTitle }}</a> 
+        <!-- {{ .ReadingTime }} 分钟 -->
+      </li>
+      {{ end }}
+    </ul>
+    {{ end }}
+
+  </section>
+</div>
+
+{{ end }} 

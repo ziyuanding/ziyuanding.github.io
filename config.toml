@@ -1,0 +1,6 @@
+languageCode = "zh-cn"
+theme = "theme_sphere_hugo"
+ignoreLogs = ['warning-goldmark-raw-html']
+[markup]
+  [markup.highlight]
+    noClasses = false

@@ -1,0 +1,15 @@
+{{ if or .Draft (eq .Params.draft true) }}
+<div class="sixteen wide column">
+  <div class="ui icon blue mini message">
+    <i class="close icon"></i>
+    <i class="fas fa-exclamation ui icon"></i>
+    <div class="content">
+      <div class="header">This page is still a draft</div>
+    <p>
+      Please consider editing <a class="noul elink" href="https://github.com/DIYbiosphere/sphere/blob/master/{{ .File.Path }}"><u>this file on GitHub</u></a>.
+      You can follow the <a href="/docs/tutorials/edit-entry/"><u>editing tutorial</u></a>
+    </p>
+    </div>
+  </div>
+</div>
+{{ end }}

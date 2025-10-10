@@ -1,0 +1,46 @@
+{{ define "main" }}
+
+{{ with .Params.header }}
+<div
+  style="background-image: url('{{ . }}'); background-repeat: no-repeat; height: 250px; background-size: cover; background-attachment: fixed;">
+</div>
+{{ end }}
+
+<div class="ui grid container xo top padding">
+
+  <div class="computer only row"> <!-- Layout for computers only -->
+    <div class="eleven wide column">
+      {{ partial "content.html" .}}
+    </div>
+    <div class="five wide column">
+      {{ partial "entry/infobox.html" .}}
+      {{ partial "entry/promotions.html" .}}
+    </div>
+  </div>
+
+  <div class="tablet only row"> <!-- Layout for computers only -->
+    <div class="nine wide column">
+      {{ partial "content.html" .}}
+    </div>
+    <div class="seven wide column">
+      {{ partial "entry/infobox.html" .}}
+      {{ partial "entry/promotions.html" .}}
+    </div>
+  </div>
+
+  <div class="mobile only row">
+    <div class="sixteen wide column"> <!-- Layout for mobiles and tablets only -->
+      {{ partial "entry/infobox.html" .}}
+    </div>
+    <div class="sixteen wide column xo top padding fourfold">
+      {{ partial "content.html" .}}
+      {{ partial "entry/promotions.html" .}}
+    </div>
+  </div>
+
+</div>
+
+{{ partial "content/issue-comments.html" .}}
+
+
+{{ end }}

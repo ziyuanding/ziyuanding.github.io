@@ -1,0 +1,43 @@
+{{ with .Params.promotions }}
+  {{ range . }}
+    <div class="ui center aligned segment"
+      {{ if .image }}
+        style="background-image:url('{{ .image }}'); background-position: center; background-size:cover;"
+      {{ else if .color }}
+        style="background-color:{{ .color }};"
+      {{ else }}
+        style="background-color:#626262;"
+      {{ end }}
+    >
+      <div class="ui disabled basic segment">
+        <div class="content">
+          <div class="center">
+            <div class="ui header inverted medium">{{ .text | markdownify }}</div>
+            {{ with .URL }}
+            <a class="noelink" href="{{ . }}">
+              <button class="ui inverted button">
+                {{ $.button }}
+              </button>
+            </a>
+            {{ end }}
+          </div>
+        </div>
+      </div>
+
+      <div class="ui active inverted dimmer">
+        <div class="content">
+          <div class="center">
+            <div class="ui header inverted medium">{{ .text | markdownify }}</div>
+            {{ with .URL }}
+            <a class="noelink" href="{{ . }}">
+              <button class="ui inverted button">
+                {{ $.button }}
+              </button>
+            </a>
+            {{ end }}
+          </div>
+        </div>
+      </div>
+    </div>
+  {{ end }}
+{{ end }}

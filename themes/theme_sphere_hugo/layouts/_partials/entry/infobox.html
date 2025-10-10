@@ -1,0 +1,149 @@
+{{ $header := .Params.header }}
+<div class="ui attached segment" {{ if $header }}style="margin-top: -100px;"{{ end }}>
+  
+  {{ if .Params.elements }}
+    <h3 class="ui header center aligned">Infobox</h3>
+  {{ end }}
+
+  {{ with .Params.website }}
+  <a class="noelink" href="{{ . }}" target="_blank">
+    {{ with $.Params.logo }}
+      <img class="ui small centered image" src="{{ . }}" />
+    {{ end }}
+  </a>
+  {{ end }}
+
+  {{ with .Params.website }}
+  <table class="ui very basic small compact table" style="table-layout:fixed">
+    <tbody>
+      <tr>
+        <td style="word-wrap: break-word;">
+          <a class="noelink" href="{{ . }}" target="_blank">{{ . }}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {{ end }}
+
+  <table class="ui very basic small compact table">
+    <tbody>
+      <tr>
+        <td><b>Collection:</b></td>
+        <td>
+          <a class="noelink" href="/browse?q=&idx=diybiosphere&p=0&dFR%5Bcollection%5D%5B0%5D={{ .Params.collection }}" target="_blank">
+            {{ if .Params.project }}<i class="far fa-briefcase icon"></i>&nbsp;<b>project</b>{{ end }}
+            {{ if .Params.startup }}<i class="far fa-rocket icon"></i>&nbsp;<b>startup</b>{{ end }}
+            {{ if .Params.lab }}<i class="far fa-flask icon"></i>&nbsp;<b>lab</b>{{ end }}
+            {{ if .Params.incubator }}<i class="far fa-leaf icon"></i>&nbsp;<b>incubator</b>{{ end }}
+            {{ if .Params.group }}<i class="far fa-users icon"></i>&nbsp;<b>group</b>{{ end }}
+            {{ if .Params.network }}<i class="far fa-share-alt icon"></i>&nbsp;<b>network</b>{{ end }}
+            {{ if .Params.event }}<i class="far fa-calendar-alt icon"></i>&nbsp;<b>event</b>{{ end }}
+            {{ if .Params.other }}<i class="far fa-umbrella icon"></i>&nbsp;<b>other</b>{{ end }}
+          </a>
+        </td>
+      </tr>
+
+      {{ with .Params.predecessor }}
+      <tr>
+        <td><b>Predecessor:</b></td>
+        <td>{{ . | markdownify }}</td>
+      </tr>
+      {{ end }}
+
+      {{ with .Params.successor }}
+      <tr>
+        <td><b>Successor:</b></td>
+        <td>{{ . | markdownify }}</td>
+      </tr>
+      {{ end }}
+
+      {{ with .Params.start_date }}
+      <tr>
+        <td><b>Start Date:</b></td>
+        <td>{{ . | time.Format "2 January, 2006" }}</td>
+      </tr>
+      {{ end }}
+
+      {{ with .Params.end_date }}
+      <tr>
+        <td><b>End Date:</b></td>
+        <td>{{ . | time.Format "2 January, 2006" }}</td>
+      </tr>
+      {{ end }}
+
+      {{ with .Params.status }}
+      <tr>
+        <td><b>Status:</b></td>
+        <td>{{ . }}</td>
+      </tr>
+      {{ end }}
+
+      {{ with .Params.type_org }}
+      <tr>
+        <td><b>Type:</b></td>
+        <td>{{ . }}</td>
+      </tr>
+      {{ end }}
+
+      {{ with .Params.hosts }}
+      <tr class="top aligned">
+        <td><b>Hosts:</b></td>
+        <td>
+          <div class="ui list">
+          {{ range . }}
+            <div class="item">{{ . }}</div>
+          {{ end }}
+          </div>
+        </td>
+      </tr>
+      {{ end }}
+
+      {{ with .Params.partners }}
+      <tr class="top aligned">
+        <td><b>Partners:</b></td>
+        <td>
+          <div class="ui list">
+          {{ range . }}
+            <div class="item">{{ . }}</div>
+          {{ end }}
+          </div>
+        </td>
+      </tr>
+      {{ end }}
+
+      <tr class="top aligned">
+        <td><b>Location:</b></td>
+        <td>
+          <span>
+            <a href="http://maps.google.com/?q={{ with .Params.address }}{{ . }}+{{ end }}{{ with .Params.city }}{{ . }}+{{ end }}{{ with .Params.state }}{{ . }}+{{ end }}{{ with .Params.country }}{{ . }}+{{ end }}" target="_blank">
+            {{ with .Params.address }}{{ . }}<br>{{ end }}
+            {{ with .Params.city }}{{ . }}{{ end }}
+            {{ with .Params.state }}, {{ . }}{{ end }}
+            {{ with .Params.country }}<br>{{ . }}{{ end }}
+            </a>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+
+    {{ with .Params.tags }}
+    <tfoot>
+      <tr>
+        <th colspan="2">
+          <b>Tags:</b>
+          {{ range $i, $tag := . }}
+            <a href="/browse?q=&idx=diybiosphere&p=0&dFR%5Btags%5D%5B0%5D={{ $tag }}">{{ $tag }}</a>{{ if ne (add $i 1) (len .) }}, {{ end }}
+          {{ end }}
+        </th>
+      </tr>
+    </tfoot>
+    {{ end }}
+  </table>
+</div>
+
+<div class="ui bottom attached segment">
+  {{ if .Params.elements }}
+    <h3 class="ui header center aligned">Links<br></h3>
+  {{ end }}
+  {{ partial "entry/links-icons.html" . }}
+</div>
