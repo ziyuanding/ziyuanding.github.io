@@ -1,6 +1,14 @@
 languageCode = "zh-cn"
+baseURL = "https://ziyuanding.github.io/"
 theme = "theme_sphere_hugo"
 ignoreLogs = ['warning-goldmark-raw-html']
 [markup]
   [markup.highlight]
     noClasses = false
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+
+[outputFormats.JSON]
+mediaType = "application/json"
+baseName = "index"
+isPlainText = false

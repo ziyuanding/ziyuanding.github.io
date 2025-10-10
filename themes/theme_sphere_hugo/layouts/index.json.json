@@ -1,0 +1,23 @@
+{
+
+  "data": [
+
+    {{ range .Pages }}
+
+    {
+
+      "title": "{{ .Title }}",
+
+      "url": "{{ .Permalink }}",
+
+      "summary": "{{ .Summary }}"
+
+    }
+
+    {{ if not (eq .Next nil) }},{{ end }}
+
+    {{ end }}
+
+  ]
+
+}
