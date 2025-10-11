@@ -4,13 +4,14 @@
     <div class="computer only row"> <!-- Layout for computers only -->
       <div class="ui fluid large borderless blue menu">
         {{ partial "nav/logo.html" . }}
-        {{ partial "nav/browse-all.html" . }}
         <div class="item">
-          <div class="ui fluid transparent icon input">
-            <!-- Algolia autocomplete search for computer. Settings at `assets/hs/autocomplete.es6` -->
-            <input type="text" id="aa-search-input" class="aa-input-search" placeholder="Search Ding's blog posts"
-              autocomplete="on" />
-            <i class="search icon"></i>
+          <div class="item" style="position: relative;">
+            <div class="ui fluid transparent icon input">
+              <input id="search-box" type="text" placeholder="Search posts...">
+              <i class="search icon"></i>
+            </div>
+            <ul id="search-results">
+            </ul>
           </div>
         </div>
         <div class="right menu">
@@ -40,32 +41,32 @@ COMMENT OUT THIS UI ELEMENT AS IT SEEMS NO LONGER SUPPORTED !-->
     <div class="tablet only row"> <!-- Layout for tablets only -->
       <div class="ui fluid large borderless blue menu">
         {{ partial "nav/logo.html" . }}
-        {{ partial "nav/browse-all.html" . }}
         <div class="item">
-          <div class="ui fluid transparent icon input">
-            <!-- Algolia autocomplete search for tablet. Settings at `assets/hs/autocomplete.es6` -->
-            <input type="search" id="aa-search-input-tablet" class="aa-input-search"
-              placeholder="Search Ding's blog posts" name="search" autocomplete="on" />
-            <i class="search icon"></i>
+          <div class="item" style="position: relative;">
+            <div class="ui fluid transparent icon input">
+              <input id="search-box" type="text" placeholder="Search posts...">
+              <i class="search icon"></i>
+            </div>
+            <ul id="search-results">
+            </ul>
           </div>
         </div>
-        {{ partial "nav/hamburger.html" . }}
       </div>
     </div>
 
     <div class="mobile only row"> <!-- Layout for mobiles only -->
       <div class="ui fluid borderless blue menu xo marginless">
         {{ partial "nav/logo.html" . }}
-        {{ partial "nav/browse-all.html" . }}
-        {{ partial "nav/hamburger.html" . }}
       </div>
       <div class="ui fluid borderless menu xo marginless center aligned">
         <div class="item">
-          <div class="ui fluid transparent icon input">
-            <!-- Algolia autocomplete search for mobile. Settings at `assets/hs/autocomplete.es6` -->
-            <input type="search" id="aa-search-input-mobile" class="aa-input-search"
-              placeholder="Search Ding's blog posts" name="search" autocomplete="on" />
-            <i class="search icon"></i>
+          <div class="item" style="position: relative;">
+            <div class="ui fluid transparent icon input">
+              <input id="search-box" type="text" placeholder="Search posts...">
+              <i class="search icon"></i>
+            </div>
+            <ul id="search-results">
+            </ul>
           </div>
         </div>
       </div>
@@ -73,3 +74,96 @@ COMMENT OUT THIS UI ELEMENT AS IT SEEMS NO LONGER SUPPORTED !-->
 
   </div>
 </nav>
+<style>
+  #search-box {
+    position: relative;
+    z-index: 10;
+    /* 确保输入框在结果之上 */
+  }
+
+  /* 搜索结果列表的样式 */
+  #search-results {
+    position: absolute;
+    top: 100%;
+    /* 紧贴输入框底部 */
+    left: 0;
+    width: 100%;
+    /* 与输入框同宽 */
+    background: white;
+    /* 或与你主题一致的颜色 */
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 250px;
+    /* 可滚动，避免太长 */
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    display: none;
+    /* 初始隐藏 */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  #search-results.show {
+    display: block;
+    /* 显示结果时添加这个类 */
+  }
+
+  /* 每个结果项 */
+  #search-results li {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  #search-results li:hover {
+    background: #f0f0f0;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+<script>
+  async function searchPosts(query) {
+    const container = document.getElementById('search-results');
+
+    // 如果输入为空，隐藏结果框
+    if (!query.trim()) {
+      container.innerHTML = '';
+      container.classList.remove('show');
+      return;
+    }
+
+    const res = await fetch('/index.json');
+    const posts = await res.json();
+    const fuse = new Fuse(posts, {
+      keys: ['title', 'content'],
+      threshold: 0.3
+    });
+    const result = fuse.search(query);
+
+    // 渲染结果
+    container.innerHTML = result.map(r =>
+      `<li><a href="${r.item.url}">${r.item.title}</a></li>`
+    ).join('');
+
+    // 如果有结果则显示，否则隐藏
+    if (result.length > 0) {
+      container.classList.add('show');
+    } else {
+      container.classList.remove('show');
+    }
+  }
+
+  const searchBox = document.getElementById('search-box');
+  const container = document.getElementById('search-results');
+
+  searchBox.addEventListener('input', e => {
+    searchPosts(e.target.value);
+  });
+
+  // 点击页面其他地方时关闭结果
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#search-box') && !e.target.closest('#search-results')) {
+      container.classList.remove('show');
+    }
+  });
+</script>
