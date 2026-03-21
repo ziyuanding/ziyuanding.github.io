@@ -59,7 +59,48 @@ kex: host key algorithm: ssh-ed25519
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;asar extract app.asar app_unpacked
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;经过在app_unpacked内的一番寻找，发现Spark Mail使用 Sprkle 更新框架。在其配置文件中，有一个appcast URL: &lt;a href="https://downloads.sparkmailapp.com/Spark3/win/dist/appcast.xml"&gt;https://downloads.sparkmailapp.com/Spark3/win/dist/appcast.xml&lt;/a&gt; Spark Mail会在服务端更新这个xml, 而我们本地的客户端会不定时地检查这个xml的内容。到这里就简单了，屏蔽这个地址就可以了。&lt;/p&gt;
-&lt;p&gt;在 C:\Windows\System32\drivers\etc\hosts 内添加 127.0.0.1 downloads.sparkmailapp.com 即可。&lt;/p&gt;</description></item><item><title>有没有必要手动安装CUDA</title><link>https://ziyuanding.github.io/posts/%E6%9C%89%E6%B2%A1%E6%9C%89%E5%BF%85%E8%A6%81%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85cuda/</link><pubDate>Mon, 22 Apr 2024 00:00:00 +0000</pubDate><guid>https://ziyuanding.github.io/posts/%E6%9C%89%E6%B2%A1%E6%9C%89%E5%BF%85%E8%A6%81%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85cuda/</guid><description>&lt;p&gt;必须要有的东西是CUDA驱动和CUDA运行时。&lt;/p&gt;
+&lt;p&gt;在 C:\Windows\System32\drivers\etc\hosts 内添加 127.0.0.1 downloads.sparkmailapp.com 即可。&lt;/p&gt;</description></item><item><title>一加3修改内核支持docker</title><link>https://ziyuanding.github.io/posts/%E4%B8%80%E5%8A%A03%E4%BF%AE%E6%94%B9%E5%86%85%E6%A0%B8%E6%94%AF%E6%8C%81docker/</link><pubDate>Thu, 21 Nov 2024 00:00:00 +0000</pubDate><guid>https://ziyuanding.github.io/posts/%E4%B8%80%E5%8A%A03%E4%BF%AE%E6%94%B9%E5%86%85%E6%A0%B8%E6%94%AF%E6%8C%81docker/</guid><description>&lt;p&gt;成品 &lt;code&gt;boot.img&lt;/code&gt; 见 &lt;a href="https://github.com/ziyuanding/oneplus3_kernel_with_docker_support"&gt;https://github.com/ziyuanding/oneplus3_kernel_with_docker_support&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id="准备工作"&gt;准备工作&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;手机连上电脑&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;准备使用ADB: &lt;code&gt;cd platform-tools&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;ADB 应该有这样的结果&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;(base) PS platform-tools&amp;gt; ./adb devices
+List of devices attached
+d32159b3 device
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;手动进入fastboot模式，试试看 &lt;code&gt;fastboot devices&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;tools&amp;gt; ./fastboot devices
+d32159b3 fastboot
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;看到了类似以上的输出就好了。&lt;/p&gt;
+&lt;h1 id="rec"&gt;rec&lt;/h1&gt;
+&lt;p&gt;lineageos的rec我用不习惯（虽然也有adb sideload和安装zip的功能），还是去https://dl.twrp.me/oneplus3/ 下载了twrp的rec, 最新的是 &lt;code&gt;twrp-3.7.0_9-0-oneplus3.img&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;手机连上电脑后，刷twrp的rec&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;./fastboot flash recovery ..\twrp-3.7.0_9-0-oneplus3.img&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;刷好rec后，可以手动操作(电源+音量加/减)进入rec.&lt;/p&gt;
+&lt;h1 id="os"&gt;os&lt;/h1&gt;
+&lt;p&gt;进入rec界面后，把data格式化，然后cache也都清一清&lt;/p&gt;
+&lt;p&gt;高级 -》 ADB Sideload&lt;/p&gt;
+&lt;p&gt;然后电脑执行&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;.\adb.exe sideload ..\lineage-18.1-20240305\lineage-18.1-20240305-nightly-oneplus3-signed.zip&lt;/code&gt;&lt;/p&gt;
+&lt;h1 id="刷bootimg"&gt;刷boot.img&lt;/h1&gt;
+&lt;p&gt;系统原装的boot.img可以在 &lt;code&gt;lineage-18.1-20240305-nightly-oneplus3-signed.zip&lt;/code&gt;里找到，直接解压出来即可。&lt;/p&gt;
+&lt;p&gt;刷入boot很简单，也不会丢数据，唯一的风险是卡开机。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;fastboot flash boot boot.img&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;需要注意的是，刷完boot.img后，root权限会丢失。&lt;/p&gt;
+&lt;h1 id="刷root"&gt;刷root&lt;/h1&gt;
+&lt;p&gt;进入rec后，找到 &lt;code&gt;Magisk-v26.4.apk.zip&lt;/code&gt; (在“手动存入”里)，刷入。&lt;/p&gt;
+&lt;h1 id="在安卓上运行docker"&gt;在安卓上运行docker&lt;/h1&gt;
+&lt;h2 id="编译内核"&gt;编译内核&lt;/h2&gt;
+&lt;p&gt;主要参考 &lt;a href="https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27"&gt;https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27&lt;/a&gt;
+和 &lt;a href="https://ivonblog.com/posts/how-to-compile-custom-android-kernel/"&gt;https://ivonblog.com/posts/how-to-compile-custom-android-kernel/&lt;/a&gt;
+&lt;a href="https://ivonblog.com/posts/run-docker-natively-on-android/"&gt;https://ivonblog.com/posts/run-docker-natively-on-android/&lt;/a&gt;
+&lt;a href="https://www.jianshu.com/p/c719e6a459ab"&gt;https://www.jianshu.com/p/c719e6a459ab&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;采用的主要是最后一篇来自 @fanxcv-简书 的资料。&lt;/p&gt;</description></item><item><title>有没有必要手动安装CUDA</title><link>https://ziyuanding.github.io/posts/%E6%9C%89%E6%B2%A1%E6%9C%89%E5%BF%85%E8%A6%81%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85cuda/</link><pubDate>Mon, 22 Apr 2024 00:00:00 +0000</pubDate><guid>https://ziyuanding.github.io/posts/%E6%9C%89%E6%B2%A1%E6%9C%89%E5%BF%85%E8%A6%81%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85cuda/</guid><description>&lt;p&gt;必须要有的东西是CUDA驱动和CUDA运行时。&lt;/p&gt;
 &lt;p&gt;CUDA驱动，一般你就正常安装显卡驱动就有，常打游戏的话电脑上应该有一个nVidia experience，这个软件就是更新驱动的。下载最新的就行。新电脑或新装系统会需要更新这个驱动。安装这个驱动会给你&lt;code&gt;nvidia-smi&lt;/code&gt;这个命令。如果这个命令找不到，那就说明没装驱动。&lt;/p&gt;
 &lt;p&gt;CUDA运行时，就是下面主要讨论的东西了。&lt;/p&gt;
 &lt;ol&gt;

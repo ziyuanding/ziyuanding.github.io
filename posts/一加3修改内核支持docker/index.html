@@ -1,0 +1,247 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width"><title>一加3修改内核支持docker |</title><link rel=stylesheet href=https://ziyuanding.github.io/css/main.min.ae047bae72f7cfdc69dab3d0757b51bb79c4c867ba9a336983ec0c2a20c576eb.css integrity="sha256-rgR7rnL3z9xp2rPQdXtRu3nEyGe6mjNpg+wMKiDFdus="><link rel=stylesheet href=https://ziyuanding.github.io/semantic/dist/semantic.min.css><link rel=stylesheet href=https://ziyuanding.github.io/css/vendor/syntax.css><script src=https://code.jquery.com/jquery-2.2.2.min.js integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin=anonymous></script><script src=/semantic/dist/semantic.min.js></script><script src=/js/vendor/fontawesome-all.js></script></head><body><header><nav><div class="ui grid container"><div class="computer only row"><div class="ui fluid large borderless blue menu"><div class="fitted item"><a href=/ style=text-decoration:none;color:#000><b>DING</b></a></div><div class=item><div class=item style=position:relative><div class="ui fluid transparent icon input"><input id=search-box type=text placeholder="Search posts...">
+<i class="search icon"></i></div><ul id=search-results></ul></div></div><div class="right menu"><div class="ui item"><a href=/about style=text-decoration:none;color:#000><b>ABOUT</b></a></div><div class="ui item" style=padding-left:5px!important;padding-right:5px!important><a href=https://www.linkedin.com/in/ziyuan-ding-467314249/ target=_blank style=text-decoration:none;color:#000><i class="linkedin icon"></i></a></div><div class="ui item" style=padding-left:5px!important;padding-right:5px!important><a href=https://github.com/ziyuanding target=_blank style=text-decoration:none;color:#000><i class="github icon"></i></a></div></div></div></div><div class="tablet only row"><div class="ui fluid large borderless blue menu"><div class="fitted item"><a href=/ style=text-decoration:none;color:#000><b>DING</b></a></div><div class=item><div class=item style=position:relative><div class="ui fluid transparent icon input"><input id=search-box type=text placeholder="Search posts...">
+<i class="search icon"></i></div><ul id=search-results></ul></div></div></div></div><div class="mobile only row"><div class="ui fluid borderless blue menu xo marginless"><div class="fitted item"><a href=/ style=text-decoration:none;color:#000><b>DING</b></a></div></div><div class="ui fluid borderless menu xo marginless center aligned"><div class=item><div class=item style=position:relative><div class="ui fluid transparent icon input"><input id=search-box type=text placeholder="Search posts...">
+<i class="search icon"></i></div><ul id=search-results></ul></div></div></div></div></div></nav><style>#search-box{position:relative;z-index:10}#search-results{position:absolute;top:100%;left:0;width:100%;background:#fff;border:1px solid #ccc;border-top:none;max-height:250px;overflow-y:auto;box-shadow:0 2px 8px rgba(0,0,0,.1);z-index:9999;display:none;list-style:none;padding:0;margin:0}#search-results.show{display:block}#search-results li{padding:8px 12px;cursor:pointer}#search-results li:hover{background:#f0f0f0}</style><script src=https://cdn.jsdelivr.net/npm/fuse.js@6.6.2></script><script>async function searchPosts(e){const t=document.getElementById("search-results");if(!e.trim()){t.innerHTML="",t.classList.remove("show");return}const s=await fetch("/index.json"),o=await s.json(),i=new Fuse(o,{keys:["title","content"],threshold:.3}),n=i.search(e);t.innerHTML=n.map(e=>`<li><a href="${e.item.url}">${e.item.title}</a></li>`).join(""),n.length>0?t.classList.add("show"):t.classList.remove("show")}const searchBox=document.getElementById("search-box"),container=document.getElementById("search-results");searchBox.addEventListener("input",e=>{searchPosts(e.target.value)}),document.addEventListener("click",e=>{!e.target.closest("#search-box")&&!e.target.closest("#search-results")&&container.classList.remove("show")})</script></header><main><div class="ui grid container xo top padding"><div class="computer only row"><div class="eleven wide column"><div class="xo padding top bottom"><div class="ui mini horizontal divided link list"><div class="disabled item">Last edit: 2024-11-21</div><a class="item noelink noul" href=https://github.com//blob/master/posts/%e4%b8%80%e5%8a%a03%e4%bf%ae%e6%94%b9%e5%86%85%e6%a0%b8%e6%94%af%e6%8c%81docker.md target=_blank><span data-tooltip="Edit page in GitHub" data-variation=mini data-inverted><i class="fal fa-edit" data-fa-transform="grow-6 right-6"></i>
+</span></a><a class="item noelink noul" href=https://github.com//issues/new target=_blank><span data-tooltip="Open GitHub Issue" data-variation=mini data-inverted><i class="fal fa-bug" data-fa-transform="grow-6 right-6"></i>
+</span></a><a class="item noelink noul" href=https://github.com//issues/new target=_blank><span data-tooltip="Open Comments Issue in GitHub" data-variation=mini data-inverted><i class="fal fa-comments" data-fa-transform="grow-6 right-6"></i></span></a></div></div><article><h1 class="ui xo margin top without"><div class="ui medium">一加3修改内核支持docker</div></h1><p>成品 <code>boot.img</code> 见 <a href=https://github.com/ziyuanding/oneplus3_kernel_with_docker_support>https://github.com/ziyuanding/oneplus3_kernel_with_docker_support</a></p><h1 id=准备工作>准备工作</h1><ol><li><p>手机连上电脑</p></li><li><p>准备使用ADB: <code>cd platform-tools</code></p><p>ADB 应该有这样的结果</p><pre tabindex=0><code>(base) PS     platform-tools&gt; ./adb devices
+List of devices attached
+d32159b3        device
+</code></pre><p>手动进入fastboot模式，试试看 <code>fastboot devices</code></p><pre tabindex=0><code>tools&gt; ./fastboot devices
+d32159b3        fastboot
+</code></pre></li></ol><p>看到了类似以上的输出就好了。</p><h1 id=rec>rec</h1><p>lineageos的rec我用不习惯（虽然也有adb sideload和安装zip的功能），还是去https://dl.twrp.me/oneplus3/ 下载了twrp的rec, 最新的是 <code>twrp-3.7.0_9-0-oneplus3.img</code></p><p>手机连上电脑后，刷twrp的rec</p><p><code>./fastboot flash recovery ..\twrp-3.7.0_9-0-oneplus3.img</code></p><p>刷好rec后，可以手动操作(电源+音量加/减)进入rec.</p><h1 id=os>os</h1><p>进入rec界面后，把data格式化，然后cache也都清一清</p><p>高级 -》 ADB Sideload</p><p>然后电脑执行</p><p><code>.\adb.exe sideload ..\lineage-18.1-20240305\lineage-18.1-20240305-nightly-oneplus3-signed.zip</code></p><h1 id=刷bootimg>刷boot.img</h1><p>系统原装的boot.img可以在 <code>lineage-18.1-20240305-nightly-oneplus3-signed.zip</code>里找到，直接解压出来即可。</p><p>刷入boot很简单，也不会丢数据，唯一的风险是卡开机。</p><p><code>fastboot flash boot boot.img</code></p><p>需要注意的是，刷完boot.img后，root权限会丢失。</p><h1 id=刷root>刷root</h1><p>进入rec后，找到 <code>Magisk-v26.4.apk.zip</code> (在“手动存入”里)，刷入。</p><h1 id=在安卓上运行docker>在安卓上运行docker</h1><h2 id=编译内核>编译内核</h2><p>主要参考 <a href=https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27>https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27</a>
+和 <a href=https://ivonblog.com/posts/how-to-compile-custom-android-kernel/>https://ivonblog.com/posts/how-to-compile-custom-android-kernel/</a>
+<a href=https://ivonblog.com/posts/run-docker-natively-on-android/>https://ivonblog.com/posts/run-docker-natively-on-android/</a>
+<a href=https://www.jianshu.com/p/c719e6a459ab>https://www.jianshu.com/p/c719e6a459ab</a></p><p>采用的主要是最后一篇来自 @fanxcv-简书 的资料。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 安装编译工具依赖</span>
+</span></span><span class=line><span class=cl>apt update 
+</span></span><span class=line><span class=cl>apt install git gnupg flex bison gperf build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev libgl1-mesa-dev libxml2-utils xsltproc unzip bc gcc-aarch64-linux-gnu
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>CUS_KERNEL_HOME</span><span class=o>=</span>~/customkernel
+</span></span><span class=line><span class=cl>mkdir -p <span class=nv>$CUS_KERNEL_HOME</span>/tools
+</span></span><span class=line><span class=cl><span class=nb>cd</span> <span class=nv>$CUS_KERNEL_HOME</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># git clone 前请先检查自己的git是否会修改代码的换行符 git config --global core.autocrlf 如果输出是true, 则说明 Git 会将 Unix 风格换行符转换为 Windows 风格</span>
+</span></span><span class=line><span class=cl><span class=c1># 可以通过 git config --global core.autocrlf input 修改，然后重写clone</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 检出编译工具 clang</span>
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth<span class=o>=</span><span class=m>1</span> -b android-vts-11.0_r8 <span class=nv>$CUS_KERNEL_HOME</span>/tools/clang
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 检出安卓GCC</span>
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 --depth<span class=o>=</span><span class=m>1</span> -b android-cts-9.0_r20 <span class=nv>$CUS_KERNEL_HOME</span>/tools/aarch64-linux-android-4.9
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 --depth<span class=o>=</span><span class=m>1</span> -b android-cts-9.0_r20 <span class=nv>$CUS_KERNEL_HOME</span>/tools/arm-linux-androideabi-4.9
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 编写环境变量脚本</span>
+</span></span><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt; $CUS_KERNEL_HOME/env.sh
+</span></span></span><span class=line><span class=cl><span class=s>#!/usr/bin/env bash
+</span></span></span><span class=line><span class=cl><span class=s>base=$CUS_KERNEL_HOME/tools
+</span></span></span><span class=line><span class=cl><span class=s>export PATH=${base}/aarch64-linux-android-4.9/bin:${base}/arm-linux-androideabi-4.9/bin:${base}/clang/clang-r383902b/bin:$PATH
+</span></span></span><span class=line><span class=cl><span class=s># 这个config需要符合你的机型
+</span></span></span><span class=line><span class=cl><span class=s>export config=lineageos_oneplus3_defconfig
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>export args=&#34;-j 32 O=out CC=clang ARCH=arm64 SUBARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-&#34;
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=cl><span class=nb>source</span> env.sh
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 下载内核源码</span>
+</span></span><span class=line><span class=cl>git clone --depth <span class=m>1</span> https://github.com/LineageOS/android_kernel_oneplus_msm8996.git <span class=nv>$CUS_KERNEL_HOME</span>/src
+</span></span><span class=line><span class=cl><span class=nb>cd</span> src
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 清理(可反复执行)</span>
+</span></span><span class=line><span class=cl>make clean <span class=o>&amp;&amp;</span> rm -rf out
+</span></span><span class=line><span class=cl>make mrproper
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 以默认内核配置做模板生成新配置，会生成到out/.config</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> <span class=si>${</span><span class=nv>config</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 对生成的默认内核配置进行修改，如果不使用args, 那么会使用默认的x64配置，那就和手机完全不一样了</span>
+</span></span><span class=line><span class=cl><span class=c1># 这个命令会修改上一条生成的out/.config 并备份旧的</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> menuconfig
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 依照 https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27 里提供的termux端 检查脚本check-config.sh 的缺失项修改配置完成后，即可进行内核编译：</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span>
+</span></span></code></pre></div><p>内核编译成功后，能在日志最后一行看到：</p><p><code>CAT arch/arm64/boot/Image.gz-dtb</code>
+这就是成功了，我们需要去这个目录找到Image.gz-dtb，并用它替换官方boot.img里的组件。</p><p>我使用的工具是 <code>Android Image Kitchen Win32</code> ，简称 <strong>AIK</strong>, 这个工具也有linux版本的，但是我运行不成功。</p><p>将官方的boot.img复制到AIK目录下，执行unpackimg.bat，它会解压boot.img并生成split_img文件夹，进入该文件夹，把你的Image.gz-dtb改名为boot.img-kernel并覆盖掉原本的boot.img-kernel。</p><p>然后执行repackimg.bat，此时生成 boot-new.img, 我们就用这个正常刷就行了。</p><h2 id=刷入内核后termux端>刷入内核后，Termux端</h2><p>RunC requires support for devices cgroup support in kernel.</p><p>If CONFIG_CGROUP_DEVICE was enabled during compile time,
+you need to run the following commands (as root) in order
+to use the RunC:</p><p>sudo mount -t tmpfs -o mode=755 tmpfs /sys/fs/cgroup
+sudo mkdir -p /sys/fs/cgroup/devices
+sudo mount -t cgroup -o devices cgroup /sys/fs/cgroup/devices</p><p>If you got error when running commands listed above, this
+usually means that your kernel lacks CONFIG_CGROUP_DEVICE.</p><h3 id=方法一>方法一</h3><p>修改dockerd配置</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ mkdir -p <span class=nv>$PREFIX</span>/etc/docker
+</span></span><span class=line><span class=cl>$ cat &lt;&lt; <span class=s2>&#34;EOF&#34;</span> &gt; <span class=nv>$PREFIX</span>/etc/docker/daemon.json
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;data-root&#34;</span>: <span class=s2>&#34;/data/docker/lib/docker&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;exec-root&#34;</span>: <span class=s2>&#34;/data/docker/run/docker&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;pidfile&#34;</span>: <span class=s2>&#34;/data/docker/run/docker.pid&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;hosts&#34;</span>: <span class=o>[</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;unix:///data/docker/run/docker.sock&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>]</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;storage-driver&#34;</span>: <span class=s2>&#34;overlay2&#34;</span> <span class=c1># 我这里必须改成vfs才行</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>EOF
+</span></span></code></pre></div><p>然后，运行docker时强制指定docker.sock
+<code>sudo DOCKER_HOST=&lt;the docker.sock location spit out when you start dockerd> docker xxxx</code></p><h3 id=方法二最终使用的>方法二（最终使用的）</h3><p>直接使用vfs，不过这可能会是一种低效的空间利用方案</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat &lt;&lt; <span class=s2>&#34;EOF&#34;</span> &gt; <span class=nv>$PREFIX</span>/etc/docker/daemon.json
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;storage-driver&#34;</span>: <span class=s2>&#34;vfs&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>EOF
+</span></span></code></pre></div><p>使用docker时无需指定位置，正常使用即可。</p><h2 id=其他注意事项>其他注意事项</h2><p>FreddieOliveira提供的检测脚本是检测 <code>/proc/config.gz</code> 的，有的手机没有这个文件。这个文件的生成也是受内核控制的，你可以先不用管docker的内核选项，先去General Options -> Kernel Config gz 把这个启用后，正常编译内核，正常刷入。然后在termux里执行测试脚本就能看到docker所需要的内核选项了。</p></article></div><div class="five wide column"><div class="ui attached segment"><table class="ui very basic small compact table"><tbody><tr><td><b>Collection:</b></td><td><a class=noelink href="/browse?q=&idx=diybiosphere&p=0&dFR%5Bcollection%5D%5B0%5D=" target=_blank></a></td></tr><tr class="top aligned"><td><b>Location:</b></td><td><span><a href="http://maps.google.com/?q=" target=_blank></a></span></td></tr></tbody></table></div><div class="ui bottom attached segment"></div></div></div><div class="tablet only row"><div class="nine wide column"><div class="xo padding top bottom"><div class="ui mini horizontal divided link list"><div class="disabled item">Last edit: 2024-11-21</div><a class="item noelink noul" href=https://github.com//blob/master/posts/%e4%b8%80%e5%8a%a03%e4%bf%ae%e6%94%b9%e5%86%85%e6%a0%b8%e6%94%af%e6%8c%81docker.md target=_blank><span data-tooltip="Edit page in GitHub" data-variation=mini data-inverted><i class="fal fa-edit" data-fa-transform="grow-6 right-6"></i>
+</span></a><a class="item noelink noul" href=https://github.com//issues/new target=_blank><span data-tooltip="Open GitHub Issue" data-variation=mini data-inverted><i class="fal fa-bug" data-fa-transform="grow-6 right-6"></i>
+</span></a><a class="item noelink noul" href=https://github.com//issues/new target=_blank><span data-tooltip="Open Comments Issue in GitHub" data-variation=mini data-inverted><i class="fal fa-comments" data-fa-transform="grow-6 right-6"></i></span></a></div></div><article><h1 class="ui xo margin top without"><div class="ui medium">一加3修改内核支持docker</div></h1><p>成品 <code>boot.img</code> 见 <a href=https://github.com/ziyuanding/oneplus3_kernel_with_docker_support>https://github.com/ziyuanding/oneplus3_kernel_with_docker_support</a></p><h1 id=准备工作>准备工作</h1><ol><li><p>手机连上电脑</p></li><li><p>准备使用ADB: <code>cd platform-tools</code></p><p>ADB 应该有这样的结果</p><pre tabindex=0><code>(base) PS     platform-tools&gt; ./adb devices
+List of devices attached
+d32159b3        device
+</code></pre><p>手动进入fastboot模式，试试看 <code>fastboot devices</code></p><pre tabindex=0><code>tools&gt; ./fastboot devices
+d32159b3        fastboot
+</code></pre></li></ol><p>看到了类似以上的输出就好了。</p><h1 id=rec>rec</h1><p>lineageos的rec我用不习惯（虽然也有adb sideload和安装zip的功能），还是去https://dl.twrp.me/oneplus3/ 下载了twrp的rec, 最新的是 <code>twrp-3.7.0_9-0-oneplus3.img</code></p><p>手机连上电脑后，刷twrp的rec</p><p><code>./fastboot flash recovery ..\twrp-3.7.0_9-0-oneplus3.img</code></p><p>刷好rec后，可以手动操作(电源+音量加/减)进入rec.</p><h1 id=os>os</h1><p>进入rec界面后，把data格式化，然后cache也都清一清</p><p>高级 -》 ADB Sideload</p><p>然后电脑执行</p><p><code>.\adb.exe sideload ..\lineage-18.1-20240305\lineage-18.1-20240305-nightly-oneplus3-signed.zip</code></p><h1 id=刷bootimg>刷boot.img</h1><p>系统原装的boot.img可以在 <code>lineage-18.1-20240305-nightly-oneplus3-signed.zip</code>里找到，直接解压出来即可。</p><p>刷入boot很简单，也不会丢数据，唯一的风险是卡开机。</p><p><code>fastboot flash boot boot.img</code></p><p>需要注意的是，刷完boot.img后，root权限会丢失。</p><h1 id=刷root>刷root</h1><p>进入rec后，找到 <code>Magisk-v26.4.apk.zip</code> (在“手动存入”里)，刷入。</p><h1 id=在安卓上运行docker>在安卓上运行docker</h1><h2 id=编译内核>编译内核</h2><p>主要参考 <a href=https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27>https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27</a>
+和 <a href=https://ivonblog.com/posts/how-to-compile-custom-android-kernel/>https://ivonblog.com/posts/how-to-compile-custom-android-kernel/</a>
+<a href=https://ivonblog.com/posts/run-docker-natively-on-android/>https://ivonblog.com/posts/run-docker-natively-on-android/</a>
+<a href=https://www.jianshu.com/p/c719e6a459ab>https://www.jianshu.com/p/c719e6a459ab</a></p><p>采用的主要是最后一篇来自 @fanxcv-简书 的资料。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 安装编译工具依赖</span>
+</span></span><span class=line><span class=cl>apt update 
+</span></span><span class=line><span class=cl>apt install git gnupg flex bison gperf build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev libgl1-mesa-dev libxml2-utils xsltproc unzip bc gcc-aarch64-linux-gnu
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>CUS_KERNEL_HOME</span><span class=o>=</span>~/customkernel
+</span></span><span class=line><span class=cl>mkdir -p <span class=nv>$CUS_KERNEL_HOME</span>/tools
+</span></span><span class=line><span class=cl><span class=nb>cd</span> <span class=nv>$CUS_KERNEL_HOME</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># git clone 前请先检查自己的git是否会修改代码的换行符 git config --global core.autocrlf 如果输出是true, 则说明 Git 会将 Unix 风格换行符转换为 Windows 风格</span>
+</span></span><span class=line><span class=cl><span class=c1># 可以通过 git config --global core.autocrlf input 修改，然后重写clone</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 检出编译工具 clang</span>
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth<span class=o>=</span><span class=m>1</span> -b android-vts-11.0_r8 <span class=nv>$CUS_KERNEL_HOME</span>/tools/clang
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 检出安卓GCC</span>
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 --depth<span class=o>=</span><span class=m>1</span> -b android-cts-9.0_r20 <span class=nv>$CUS_KERNEL_HOME</span>/tools/aarch64-linux-android-4.9
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 --depth<span class=o>=</span><span class=m>1</span> -b android-cts-9.0_r20 <span class=nv>$CUS_KERNEL_HOME</span>/tools/arm-linux-androideabi-4.9
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 编写环境变量脚本</span>
+</span></span><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt; $CUS_KERNEL_HOME/env.sh
+</span></span></span><span class=line><span class=cl><span class=s>#!/usr/bin/env bash
+</span></span></span><span class=line><span class=cl><span class=s>base=$CUS_KERNEL_HOME/tools
+</span></span></span><span class=line><span class=cl><span class=s>export PATH=${base}/aarch64-linux-android-4.9/bin:${base}/arm-linux-androideabi-4.9/bin:${base}/clang/clang-r383902b/bin:$PATH
+</span></span></span><span class=line><span class=cl><span class=s># 这个config需要符合你的机型
+</span></span></span><span class=line><span class=cl><span class=s>export config=lineageos_oneplus3_defconfig
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>export args=&#34;-j 32 O=out CC=clang ARCH=arm64 SUBARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-&#34;
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=cl><span class=nb>source</span> env.sh
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 下载内核源码</span>
+</span></span><span class=line><span class=cl>git clone --depth <span class=m>1</span> https://github.com/LineageOS/android_kernel_oneplus_msm8996.git <span class=nv>$CUS_KERNEL_HOME</span>/src
+</span></span><span class=line><span class=cl><span class=nb>cd</span> src
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 清理(可反复执行)</span>
+</span></span><span class=line><span class=cl>make clean <span class=o>&amp;&amp;</span> rm -rf out
+</span></span><span class=line><span class=cl>make mrproper
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 以默认内核配置做模板生成新配置，会生成到out/.config</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> <span class=si>${</span><span class=nv>config</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 对生成的默认内核配置进行修改，如果不使用args, 那么会使用默认的x64配置，那就和手机完全不一样了</span>
+</span></span><span class=line><span class=cl><span class=c1># 这个命令会修改上一条生成的out/.config 并备份旧的</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> menuconfig
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 依照 https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27 里提供的termux端 检查脚本check-config.sh 的缺失项修改配置完成后，即可进行内核编译：</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span>
+</span></span></code></pre></div><p>内核编译成功后，能在日志最后一行看到：</p><p><code>CAT arch/arm64/boot/Image.gz-dtb</code>
+这就是成功了，我们需要去这个目录找到Image.gz-dtb，并用它替换官方boot.img里的组件。</p><p>我使用的工具是 <code>Android Image Kitchen Win32</code> ，简称 <strong>AIK</strong>, 这个工具也有linux版本的，但是我运行不成功。</p><p>将官方的boot.img复制到AIK目录下，执行unpackimg.bat，它会解压boot.img并生成split_img文件夹，进入该文件夹，把你的Image.gz-dtb改名为boot.img-kernel并覆盖掉原本的boot.img-kernel。</p><p>然后执行repackimg.bat，此时生成 boot-new.img, 我们就用这个正常刷就行了。</p><h2 id=刷入内核后termux端>刷入内核后，Termux端</h2><p>RunC requires support for devices cgroup support in kernel.</p><p>If CONFIG_CGROUP_DEVICE was enabled during compile time,
+you need to run the following commands (as root) in order
+to use the RunC:</p><p>sudo mount -t tmpfs -o mode=755 tmpfs /sys/fs/cgroup
+sudo mkdir -p /sys/fs/cgroup/devices
+sudo mount -t cgroup -o devices cgroup /sys/fs/cgroup/devices</p><p>If you got error when running commands listed above, this
+usually means that your kernel lacks CONFIG_CGROUP_DEVICE.</p><h3 id=方法一>方法一</h3><p>修改dockerd配置</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ mkdir -p <span class=nv>$PREFIX</span>/etc/docker
+</span></span><span class=line><span class=cl>$ cat &lt;&lt; <span class=s2>&#34;EOF&#34;</span> &gt; <span class=nv>$PREFIX</span>/etc/docker/daemon.json
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;data-root&#34;</span>: <span class=s2>&#34;/data/docker/lib/docker&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;exec-root&#34;</span>: <span class=s2>&#34;/data/docker/run/docker&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;pidfile&#34;</span>: <span class=s2>&#34;/data/docker/run/docker.pid&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;hosts&#34;</span>: <span class=o>[</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;unix:///data/docker/run/docker.sock&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>]</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;storage-driver&#34;</span>: <span class=s2>&#34;overlay2&#34;</span> <span class=c1># 我这里必须改成vfs才行</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>EOF
+</span></span></code></pre></div><p>然后，运行docker时强制指定docker.sock
+<code>sudo DOCKER_HOST=&lt;the docker.sock location spit out when you start dockerd> docker xxxx</code></p><h3 id=方法二最终使用的>方法二（最终使用的）</h3><p>直接使用vfs，不过这可能会是一种低效的空间利用方案</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat &lt;&lt; <span class=s2>&#34;EOF&#34;</span> &gt; <span class=nv>$PREFIX</span>/etc/docker/daemon.json
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;storage-driver&#34;</span>: <span class=s2>&#34;vfs&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>EOF
+</span></span></code></pre></div><p>使用docker时无需指定位置，正常使用即可。</p><h2 id=其他注意事项>其他注意事项</h2><p>FreddieOliveira提供的检测脚本是检测 <code>/proc/config.gz</code> 的，有的手机没有这个文件。这个文件的生成也是受内核控制的，你可以先不用管docker的内核选项，先去General Options -> Kernel Config gz 把这个启用后，正常编译内核，正常刷入。然后在termux里执行测试脚本就能看到docker所需要的内核选项了。</p></article></div><div class="seven wide column"><div class="ui attached segment"><table class="ui very basic small compact table"><tbody><tr><td><b>Collection:</b></td><td><a class=noelink href="/browse?q=&idx=diybiosphere&p=0&dFR%5Bcollection%5D%5B0%5D=" target=_blank></a></td></tr><tr class="top aligned"><td><b>Location:</b></td><td><span><a href="http://maps.google.com/?q=" target=_blank></a></span></td></tr></tbody></table></div><div class="ui bottom attached segment"></div></div></div><div class="mobile only row"><div class="sixteen wide column"><div class="ui attached segment"><table class="ui very basic small compact table"><tbody><tr><td><b>Collection:</b></td><td><a class=noelink href="/browse?q=&idx=diybiosphere&p=0&dFR%5Bcollection%5D%5B0%5D=" target=_blank></a></td></tr><tr class="top aligned"><td><b>Location:</b></td><td><span><a href="http://maps.google.com/?q=" target=_blank></a></span></td></tr></tbody></table></div><div class="ui bottom attached segment"></div></div><div class="sixteen wide column xo top padding fourfold"><div class="xo padding top bottom"><div class="ui mini horizontal divided link list"><div class="disabled item">Last edit: 2024-11-21</div><a class="item noelink noul" href=https://github.com//blob/master/posts/%e4%b8%80%e5%8a%a03%e4%bf%ae%e6%94%b9%e5%86%85%e6%a0%b8%e6%94%af%e6%8c%81docker.md target=_blank><span data-tooltip="Edit page in GitHub" data-variation=mini data-inverted><i class="fal fa-edit" data-fa-transform="grow-6 right-6"></i>
+</span></a><a class="item noelink noul" href=https://github.com//issues/new target=_blank><span data-tooltip="Open GitHub Issue" data-variation=mini data-inverted><i class="fal fa-bug" data-fa-transform="grow-6 right-6"></i>
+</span></a><a class="item noelink noul" href=https://github.com//issues/new target=_blank><span data-tooltip="Open Comments Issue in GitHub" data-variation=mini data-inverted><i class="fal fa-comments" data-fa-transform="grow-6 right-6"></i></span></a></div></div><article><h1 class="ui xo margin top without"><div class="ui medium">一加3修改内核支持docker</div></h1><p>成品 <code>boot.img</code> 见 <a href=https://github.com/ziyuanding/oneplus3_kernel_with_docker_support>https://github.com/ziyuanding/oneplus3_kernel_with_docker_support</a></p><h1 id=准备工作>准备工作</h1><ol><li><p>手机连上电脑</p></li><li><p>准备使用ADB: <code>cd platform-tools</code></p><p>ADB 应该有这样的结果</p><pre tabindex=0><code>(base) PS     platform-tools&gt; ./adb devices
+List of devices attached
+d32159b3        device
+</code></pre><p>手动进入fastboot模式，试试看 <code>fastboot devices</code></p><pre tabindex=0><code>tools&gt; ./fastboot devices
+d32159b3        fastboot
+</code></pre></li></ol><p>看到了类似以上的输出就好了。</p><h1 id=rec>rec</h1><p>lineageos的rec我用不习惯（虽然也有adb sideload和安装zip的功能），还是去https://dl.twrp.me/oneplus3/ 下载了twrp的rec, 最新的是 <code>twrp-3.7.0_9-0-oneplus3.img</code></p><p>手机连上电脑后，刷twrp的rec</p><p><code>./fastboot flash recovery ..\twrp-3.7.0_9-0-oneplus3.img</code></p><p>刷好rec后，可以手动操作(电源+音量加/减)进入rec.</p><h1 id=os>os</h1><p>进入rec界面后，把data格式化，然后cache也都清一清</p><p>高级 -》 ADB Sideload</p><p>然后电脑执行</p><p><code>.\adb.exe sideload ..\lineage-18.1-20240305\lineage-18.1-20240305-nightly-oneplus3-signed.zip</code></p><h1 id=刷bootimg>刷boot.img</h1><p>系统原装的boot.img可以在 <code>lineage-18.1-20240305-nightly-oneplus3-signed.zip</code>里找到，直接解压出来即可。</p><p>刷入boot很简单，也不会丢数据，唯一的风险是卡开机。</p><p><code>fastboot flash boot boot.img</code></p><p>需要注意的是，刷完boot.img后，root权限会丢失。</p><h1 id=刷root>刷root</h1><p>进入rec后，找到 <code>Magisk-v26.4.apk.zip</code> (在“手动存入”里)，刷入。</p><h1 id=在安卓上运行docker>在安卓上运行docker</h1><h2 id=编译内核>编译内核</h2><p>主要参考 <a href=https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27>https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27</a>
+和 <a href=https://ivonblog.com/posts/how-to-compile-custom-android-kernel/>https://ivonblog.com/posts/how-to-compile-custom-android-kernel/</a>
+<a href=https://ivonblog.com/posts/run-docker-natively-on-android/>https://ivonblog.com/posts/run-docker-natively-on-android/</a>
+<a href=https://www.jianshu.com/p/c719e6a459ab>https://www.jianshu.com/p/c719e6a459ab</a></p><p>采用的主要是最后一篇来自 @fanxcv-简书 的资料。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 安装编译工具依赖</span>
+</span></span><span class=line><span class=cl>apt update 
+</span></span><span class=line><span class=cl>apt install git gnupg flex bison gperf build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev libgl1-mesa-dev libxml2-utils xsltproc unzip bc gcc-aarch64-linux-gnu
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>CUS_KERNEL_HOME</span><span class=o>=</span>~/customkernel
+</span></span><span class=line><span class=cl>mkdir -p <span class=nv>$CUS_KERNEL_HOME</span>/tools
+</span></span><span class=line><span class=cl><span class=nb>cd</span> <span class=nv>$CUS_KERNEL_HOME</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># git clone 前请先检查自己的git是否会修改代码的换行符 git config --global core.autocrlf 如果输出是true, 则说明 Git 会将 Unix 风格换行符转换为 Windows 风格</span>
+</span></span><span class=line><span class=cl><span class=c1># 可以通过 git config --global core.autocrlf input 修改，然后重写clone</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 检出编译工具 clang</span>
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth<span class=o>=</span><span class=m>1</span> -b android-vts-11.0_r8 <span class=nv>$CUS_KERNEL_HOME</span>/tools/clang
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 检出安卓GCC</span>
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 --depth<span class=o>=</span><span class=m>1</span> -b android-cts-9.0_r20 <span class=nv>$CUS_KERNEL_HOME</span>/tools/aarch64-linux-android-4.9
+</span></span><span class=line><span class=cl>git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 --depth<span class=o>=</span><span class=m>1</span> -b android-cts-9.0_r20 <span class=nv>$CUS_KERNEL_HOME</span>/tools/arm-linux-androideabi-4.9
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 编写环境变量脚本</span>
+</span></span><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt; $CUS_KERNEL_HOME/env.sh
+</span></span></span><span class=line><span class=cl><span class=s>#!/usr/bin/env bash
+</span></span></span><span class=line><span class=cl><span class=s>base=$CUS_KERNEL_HOME/tools
+</span></span></span><span class=line><span class=cl><span class=s>export PATH=${base}/aarch64-linux-android-4.9/bin:${base}/arm-linux-androideabi-4.9/bin:${base}/clang/clang-r383902b/bin:$PATH
+</span></span></span><span class=line><span class=cl><span class=s># 这个config需要符合你的机型
+</span></span></span><span class=line><span class=cl><span class=s>export config=lineageos_oneplus3_defconfig
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>export args=&#34;-j 32 O=out CC=clang ARCH=arm64 SUBARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-&#34;
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=cl><span class=nb>source</span> env.sh
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 下载内核源码</span>
+</span></span><span class=line><span class=cl>git clone --depth <span class=m>1</span> https://github.com/LineageOS/android_kernel_oneplus_msm8996.git <span class=nv>$CUS_KERNEL_HOME</span>/src
+</span></span><span class=line><span class=cl><span class=nb>cd</span> src
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 清理(可反复执行)</span>
+</span></span><span class=line><span class=cl>make clean <span class=o>&amp;&amp;</span> rm -rf out
+</span></span><span class=line><span class=cl>make mrproper
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 以默认内核配置做模板生成新配置，会生成到out/.config</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> <span class=si>${</span><span class=nv>config</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 对生成的默认内核配置进行修改，如果不使用args, 那么会使用默认的x64配置，那就和手机完全不一样了</span>
+</span></span><span class=line><span class=cl><span class=c1># 这个命令会修改上一条生成的out/.config 并备份旧的</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> menuconfig
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 依照 https://gist.github.com/FreddieOliveira/efe850df7ff3951cb62d74bd770dce27 里提供的termux端 检查脚本check-config.sh 的缺失项修改配置完成后，即可进行内核编译：</span>
+</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span>
+</span></span></code></pre></div><p>内核编译成功后，能在日志最后一行看到：</p><p><code>CAT arch/arm64/boot/Image.gz-dtb</code>
+这就是成功了，我们需要去这个目录找到Image.gz-dtb，并用它替换官方boot.img里的组件。</p><p>我使用的工具是 <code>Android Image Kitchen Win32</code> ，简称 <strong>AIK</strong>, 这个工具也有linux版本的，但是我运行不成功。</p><p>将官方的boot.img复制到AIK目录下，执行unpackimg.bat，它会解压boot.img并生成split_img文件夹，进入该文件夹，把你的Image.gz-dtb改名为boot.img-kernel并覆盖掉原本的boot.img-kernel。</p><p>然后执行repackimg.bat，此时生成 boot-new.img, 我们就用这个正常刷就行了。</p><h2 id=刷入内核后termux端>刷入内核后，Termux端</h2><p>RunC requires support for devices cgroup support in kernel.</p><p>If CONFIG_CGROUP_DEVICE was enabled during compile time,
+you need to run the following commands (as root) in order
+to use the RunC:</p><p>sudo mount -t tmpfs -o mode=755 tmpfs /sys/fs/cgroup
+sudo mkdir -p /sys/fs/cgroup/devices
+sudo mount -t cgroup -o devices cgroup /sys/fs/cgroup/devices</p><p>If you got error when running commands listed above, this
+usually means that your kernel lacks CONFIG_CGROUP_DEVICE.</p><h3 id=方法一>方法一</h3><p>修改dockerd配置</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ mkdir -p <span class=nv>$PREFIX</span>/etc/docker
+</span></span><span class=line><span class=cl>$ cat &lt;&lt; <span class=s2>&#34;EOF&#34;</span> &gt; <span class=nv>$PREFIX</span>/etc/docker/daemon.json
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;data-root&#34;</span>: <span class=s2>&#34;/data/docker/lib/docker&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;exec-root&#34;</span>: <span class=s2>&#34;/data/docker/run/docker&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;pidfile&#34;</span>: <span class=s2>&#34;/data/docker/run/docker.pid&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;hosts&#34;</span>: <span class=o>[</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;unix:///data/docker/run/docker.sock&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>]</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;storage-driver&#34;</span>: <span class=s2>&#34;overlay2&#34;</span> <span class=c1># 我这里必须改成vfs才行</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>EOF
+</span></span></code></pre></div><p>然后，运行docker时强制指定docker.sock
+<code>sudo DOCKER_HOST=&lt;the docker.sock location spit out when you start dockerd> docker xxxx</code></p><h3 id=方法二最终使用的>方法二（最终使用的）</h3><p>直接使用vfs，不过这可能会是一种低效的空间利用方案</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat &lt;&lt; <span class=s2>&#34;EOF&#34;</span> &gt; <span class=nv>$PREFIX</span>/etc/docker/daemon.json
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;storage-driver&#34;</span>: <span class=s2>&#34;vfs&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>EOF
+</span></span></code></pre></div><p>使用docker时无需指定位置，正常使用即可。</p><h2 id=其他注意事项>其他注意事项</h2><p>FreddieOliveira提供的检测脚本是检测 <code>/proc/config.gz</code> 的，有的手机没有这个文件。这个文件的生成也是受内核控制的，你可以先不用管docker的内核选项，先去General Options -> Kernel Config gz 把这个启用后，正常编译内核，正常刷入。然后在termux里执行测试脚本就能看到docker所需要的内核选项了。</p></article></div></div></div><div class="ui grid container xo top padding"><section class="xo margin top fourfold"><h3 class="ui horizontal divider header"><i class="far fa-comments"></i> Comments</h3><a target=_blank href=https://github.com//issues/new><div class="ui basic submit mini button"><i class="fal fa-comment"></i> Open Comments Issue in GitHub</div></a></section></div><script type=text/javascript src=https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js></script><script type=text/javascript>function loadComments(e){for(var n,s,o,i,a,r,c,t=0;t<e.length;t++)s=e[t].user.login,o="https://www.github.com/"+e[t].user.login,c=e[t].user.type,n="https://github.com//issues/#issuecomment-"+e[t].url.substring(e[t].url.lastIndexOf("/")+1),i=e[t].body_html,a=e[t].user.avatar_url,r=Date.parse(e[t].created_at).toString("yyyy-MM-dd HH:mm"),$("#comments").append(`<div class='comment'><a class='avatar'><img src="`+a+`"></a><div class='content'><a class='author' target='_blank' href="`+o+'">'+s+"</a><div class='metadata'><div class='date'>"+r+"</div></div><div class='text'>"+i+`</div></div><div class='actions'><a target='_blank' href="`+n+`" class='reply'><i class='far fa-reply'></i> Reply</a><a target='_blank' href="`+n+`" class='reply'><i class='far fa-smile'></i> React</a></div></div></div>`)}</script></main><footer><footer class="xo top margin sixfold"><div class="ui container center aligned grid xo top bottom padding"><div class=row><div class="sixteen wide column"><div class="ui small horizontal divided link list"><a class=item href=https://github.com/DIYbiosphere/sphere>This site's theme is powered by DIYbiosphere under CC0.</a></div></div></div></div></footer></footer></body></html>
